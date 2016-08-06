@@ -124,12 +124,12 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 	}
 
 	private void startAnimate(CardView cardView) {
-		PropertyValuesHolder pyhScaleX = PropertyValuesHolder.ofFloat("scaleX", 0.1f, 1.05f);
-		PropertyValuesHolder pyhScaleY = PropertyValuesHolder.ofFloat("scaleY", 0.1f, 1.05f);
+		PropertyValuesHolder pyhScaleX = PropertyValuesHolder.ofFloat("scaleX", 0.5f, 1.05f);
+		PropertyValuesHolder pyhScaleY = PropertyValuesHolder.ofFloat("scaleY", 0.5f, 1.05f);
 		ObjectAnimator animator_out = ObjectAnimator.ofPropertyValuesHolder(mCardView, pyhScaleX,
 				pyhScaleY); // 同时缩放X和Y
 		animator_out.setInterpolator(new AccelerateDecelerateInterpolator());
-		animator_out.setDuration(350);
+		animator_out.setDuration(200);
 		PropertyValuesHolder pyhScaleX2 = PropertyValuesHolder.ofFloat("scaleX", 1.05f, 1f);
 		PropertyValuesHolder pyhScaleY2 = PropertyValuesHolder.ofFloat("scaleY", 1.05f, 1f);
 		ObjectAnimator animator_in = ObjectAnimator.ofPropertyValuesHolder(mCardView, pyhScaleX2,
