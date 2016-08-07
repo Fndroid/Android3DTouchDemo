@@ -87,7 +87,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
 	@Override
 	public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-		mCover.setImageBitmap(blur(blur(blur(getScreenImage(), 25f),25f),25f)); // 对截取的图片三次高斯模糊
+		mCover.setImageBitmap(multiBlur(getScreenImage(), 4)); // 对截取的图片三次高斯模糊
 		mCover.setVisibility(View.VISIBLE);
 		mCover.setImageAlpha(0);
 		new Thread(new Runnable() {
@@ -156,6 +156,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 				.getHeight());
 		view.destroyDrawingCache();
 		return bitmap;
+	}
+
+	private Bitmap multiBlur(Bitmap bitmap, int n) {
+		Bitmap result = bitmap;
+		for (int i = 0; i < n; i++) {
+			result = blur(result, 25f);
+		}
+		return result;
 	}
 
 	private Bitmap blur(Bitmap bitmap, float radius) {
