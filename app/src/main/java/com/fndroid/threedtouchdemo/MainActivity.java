@@ -134,7 +134,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 		ObjectAnimator animator_out = ObjectAnimator.ofPropertyValuesHolder(mCardView, pyhScaleX,
 				pyhScaleY); // 同时缩放X和Y
 		animator_out.setInterpolator(new AccelerateDecelerateInterpolator());
-		animator_out.setDuration(400);
+		animator_out.setDuration(200);
 		PropertyValuesHolder pyhScaleX2 = PropertyValuesHolder.ofFloat("scaleX", 1.05f, 1f);
 		PropertyValuesHolder pyhScaleY2 = PropertyValuesHolder.ofFloat("scaleY", 1.05f, 1f);
 		ObjectAnimator animator_in = ObjectAnimator.ofPropertyValuesHolder(mCardView, pyhScaleX2,
