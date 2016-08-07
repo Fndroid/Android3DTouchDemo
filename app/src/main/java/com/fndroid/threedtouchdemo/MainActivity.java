@@ -5,6 +5,7 @@ import android.animation.ObjectAnimator;
 import android.animation.PropertyValuesHolder;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.Matrix;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -15,6 +16,7 @@ import android.renderscript.ScriptIntrinsicBlur;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -87,11 +89,11 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
 	@Override
 	public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-		mCover.setImageBitmap(multiBlur(getScreenImage(), 4)); // 对截取的图片三次高斯模糊
+		mCover.setImageBitmap(multiBlur(getScreenImage(), 1)); // 对截取的图片三次高斯模糊
 		mCover.setVisibility(View.VISIBLE);
 		mCover.setImageAlpha(0);
 		new Thread(new Runnable() {
-			int progress = 50;
+			int progress = 150;
 
 			@Override
 			public void run() {
@@ -159,11 +161,23 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 	}
 
 	private Bitmap multiBlur(Bitmap bitmap, int n) {
-		Bitmap result = bitmap;
+		int height = bitmap.getHeight();
+		float percent = (float) 300 / height;
+		Log.d(TAG, "multiBlur: "+ percent);
+		Bitmap result = getSmallSizeBitmap(bitmap, percent);
 		for (int i = 0; i < n; i++) {
-			result = blur(result, 25f);
+			result = blur(result, 15f);
 		}
 		return result;
+	}
+
+	private Bitmap getSmallSizeBitmap(Bitmap source, float percent) {
+		if (percent > 1 || percent <= 0) {
+			throw new IllegalArgumentException("percent must be > 1 and <= 0");
+		}
+		Matrix matrix = new Matrix();
+		matrix.setScale(percent, percent);
+		return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
 	}
 
 	private Bitmap blur(Bitmap bitmap, float radius) {
