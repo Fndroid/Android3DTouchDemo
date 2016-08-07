@@ -63,6 +63,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 		mToolbar = (Toolbar) findViewById(R.id.toolbar);
 		setSupportActionBar(mToolbar);
 		mCardView = (CardView) findViewById(R.id.cv);
+		mCardView.setVisibility(GONE);
 		mCover.setVisibility(GONE);
 		mCover.setOnClickListener(this);
 		mListView = (ListView) findViewById(R.id.lv);
