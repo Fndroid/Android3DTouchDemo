@@ -16,7 +16,6 @@ import android.renderscript.ScriptIntrinsicBlur;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.animation.AccelerateDecelerateInterpolator;
@@ -35,7 +34,8 @@ import java.util.Map;
 
 import static android.view.View.GONE;
 
-public class MainActivity extends AppCompatActivity implements AdapterView.OnItemLongClickListener, View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements AdapterView
+		.OnItemLongClickListener, View.OnClickListener {
 	private static final String TAG = "MainActivity";
 	private LinearLayout root;
 	private ImageView mCover;
@@ -89,7 +89,10 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 
 	@Override
 	public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-		mCover.setImageBitmap(multiBlur(getScreenImage(), 1)); // 对截取的图片三次高斯模糊
+		Bitmap screenBitmap = getScreenImage();
+		float percent = (float) 300 / screenBitmap.getHeight(); // 计算以300为高度的缩放百分比
+		mCover.setImageBitmap(blur(getSmallSizeBitmap(screenBitmap, percent), 15f)); //
+		// 根据缩放百分比得到图片再模糊处理
 		mCover.setVisibility(View.VISIBLE);
 		mCover.setImageAlpha(0);
 		new Thread(new Runnable() {
@@ -114,14 +117,16 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 	}
 
 	// 显示对应的卡片
-	private void showView(int position, View view){
+	private void showView(int position, View view) {
 		newView = LayoutInflater.from(this).inflate(R.layout.item, null); // 加载Itme的布局
 		TextView tv = (TextView) newView.findViewById(R.id.item_tv); // 获取对应控件
 		tv.setText(data.get(position).get("name")); // 将Item对应控件的值设置回去
 		newView.setBackgroundColor(Color.WHITE);
 		// 设置卡片的样式，位置通过margintop来计算
-		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(view.getWidth() - 30, view.getHeight());
-		params.topMargin = (int) (view.getY() + mToolbar.getHeight()); // 卡片的marginTop设置为item的Y加上toolbar的高度
+		FrameLayout.LayoutParams params = new FrameLayout.LayoutParams(view.getWidth() - 30, view
+				.getHeight());
+		params.topMargin = (int) (view.getY() + mToolbar.getHeight()); //
+		// 卡片的marginTop设置为item的Y加上toolbar的高度
 		params.leftMargin = 15;
 		params.rightMargin = 15;
 		mCardView.setVisibility(View.VISIBLE);
@@ -160,24 +165,14 @@ public class MainActivity extends AppCompatActivity implements AdapterView.OnIte
 		return bitmap;
 	}
 
-	private Bitmap multiBlur(Bitmap bitmap, int n) {
-		int height = bitmap.getHeight();
-		float percent = (float) 300 / height;
-		Log.d(TAG, "multiBlur: "+ percent);
-		Bitmap result = getSmallSizeBitmap(bitmap, percent);
-		for (int i = 0; i < n; i++) {
-			result = blur(result, 15f);
-		}
-		return result;
-	}
-
 	private Bitmap getSmallSizeBitmap(Bitmap source, float percent) {
 		if (percent > 1 || percent <= 0) {
 			throw new IllegalArgumentException("percent must be > 1 and <= 0");
 		}
 		Matrix matrix = new Matrix();
 		matrix.setScale(percent, percent);
-		return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix, true);
+		return Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), matrix,
+				true);
 	}
 
 	private Bitmap blur(Bitmap bitmap, float radius) {
