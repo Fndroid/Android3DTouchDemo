@@ -95,7 +95,7 @@ public class MainActivity extends AppCompatActivity implements AdapterView
 		// 根据缩放百分比得到图片再模糊处理
 		mCover.setVisibility(View.VISIBLE);
 		mCover.setImageAlpha(0);
-		new Thread(new Runnable() {
+		new Thread(new Runnable() { // 开启线程让模糊效果慢慢进行过渡
 			int progress = 150;
 
 			@Override
