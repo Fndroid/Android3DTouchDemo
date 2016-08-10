@@ -29,11 +29,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 import rx.Observable;
 import rx.Subscriber;
 import rx.android.schedulers.AndroidSchedulers;
 import rx.functions.Action1;
+import rx.functions.Func1;
 import rx.schedulers.Schedulers;
 
 import static android.view.View.GONE;
@@ -102,14 +104,28 @@ public class MainActivity extends AppCompatActivity implements AdapterView
 			public void call(Bitmap bitmap) {
 				mCover.setImageBitmap(bitmap);
 				mCover.setVisibility(View.VISIBLE);
-				mCover.setImageAlpha(255);
+				mCover.setImageAlpha(0);
 				showView(num, itemView);
+			}
+		});
+
+		Observable.interval(10, TimeUnit.MILLISECONDS, Schedulers.newThread()).map(new Func1<Long,
+				Integer>() {
+			@Override
+			public Integer call(Long aLong) {
+				return Integer.parseInt(aLong.toString());
+			}
+		}).take(26).observeOn(AndroidSchedulers.mainThread()).subscribe(new Action1<Integer>() {
+			@Override
+			public void call(Integer integer) {
+				mCover.setImageAlpha(integer * 10 + 5);
 			}
 		});
 		return true;
 	}
 
 	// 显示对应的卡片
+
 	private void showView(int position, View view) {
 		newView = LayoutInflater.from(this).inflate(R.layout.item, null); // 加载Itme的布局
 		TextView tv = (TextView) newView.findViewById(R.id.item_tv); // 获取对应控件
