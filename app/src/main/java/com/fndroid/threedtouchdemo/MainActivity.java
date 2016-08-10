@@ -7,8 +7,6 @@ import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.graphics.Matrix;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.renderscript.Allocation;
 import android.renderscript.Element;
 import android.renderscript.RenderScript;
@@ -32,6 +30,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import rx.Observable;
+import rx.Subscriber;
+import rx.android.schedulers.AndroidSchedulers;
+import rx.functions.Action1;
+import rx.schedulers.Schedulers;
+
 import static android.view.View.GONE;
 
 public class MainActivity extends AppCompatActivity implements AdapterView
@@ -44,14 +48,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView
 	private Toolbar mToolbar;
 	private CardView mCardView;
 	private List<Map<String, String>> data;
-	private Handler mHandler = new Handler() {
-		@Override
-		public void handleMessage(Message msg) {
-			super.handleMessage(msg);
-			int progress = (int) msg.obj;
-			mCover.setImageAlpha(progress);
-		}
-	};
 	private View newView;
 
 	@Override
@@ -89,30 +85,27 @@ public class MainActivity extends AppCompatActivity implements AdapterView
 
 	@Override
 	public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
-		Bitmap screenBitmap = getScreenImage();
-		float percent = (float) 300 / screenBitmap.getHeight(); // 计算以300为高度的缩放百分比
-		mCover.setImageBitmap(blur(getSmallSizeBitmap(screenBitmap, percent), 15f)); //
-		// 根据缩放百分比得到图片再模糊处理
-		mCover.setVisibility(View.VISIBLE);
-		mCover.setImageAlpha(0);
-		new Thread(new Runnable() { // 开启线程让模糊效果慢慢进行过渡
-			int progress = 150;
+		final int num = position;
+		final View itemView = view;
+		final Bitmap screenBitmap = getScreenImage();
+		final float percent = (float) 300 / screenBitmap.getHeight(); // 计算以300为高度的缩放百分比
 
+		Observable.create(new Observable.OnSubscribe<Bitmap>() {
 			@Override
-			public void run() {
-				while (progress < 255) {
-					try {
-						Thread.sleep(1);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-					Message msg = new Message();
-					msg.obj = progress++;
-					mHandler.sendMessage(msg);
-				}
+			public void call(Subscriber<? super Bitmap> subscriber) {
+				Bitmap bitmap = blur(getSmallSizeBitmap(screenBitmap, percent), 25f);
+				subscriber.onNext(bitmap);
 			}
-		}).start();
-		showView(position, view);
+		}).subscribeOn(Schedulers.computation()).observeOn(AndroidSchedulers.mainThread())
+				.subscribe(new Action1<Bitmap>() {
+			@Override
+			public void call(Bitmap bitmap) {
+				mCover.setImageBitmap(bitmap);
+				mCover.setVisibility(View.VISIBLE);
+				mCover.setImageAlpha(255);
+				showView(num, itemView);
+			}
+		});
 		return true;
 	}
 
