@@ -5,4 +5,4 @@
 ![sample](https://github.com/Fndroid/Android3DTouchDemo/blob/master/imgs/jdfw.gif?raw=true)
 
 
-8.11更新，把模糊操作放在新的线程中
+8.11更新，把模糊操作放在新的线程中，使用RxJava
