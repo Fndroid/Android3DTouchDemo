@@ -17,7 +17,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -56,7 +55,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView
 	private CardView mCardView;
 	private List<Map<String, String>> data;
 	private View newView;
-	private GestureDetector mGestureDetector;
 	private AnimatorSet showCardAnimationSet;
 
 	@Override
@@ -68,7 +66,6 @@ public class MainActivity extends AppCompatActivity implements AdapterView
 	}
 
 	private void initViews() {
-		mGestureDetector = new GestureDetector(this, new MyOnGestureListener());
 		mRoot = (FrameLayout) findViewById(R.id.activity_main);
 		root = (LinearLayout) findViewById(R.id.root);
 		mCover = (ImageView) findViewById(R.id.cover);
